@@ -18,3 +18,38 @@ fn main(){
     }
 }
 
+#[cfg(test)]
+mod test_main {
+    use super::*;
+
+    #[test]
+    fn test_main_with_valid_args() {
+        let args = vec![
+            String::from("program"),
+            String::from("test"),
+            String::from("test.txt")
+        ];
+        let config = Config::build(&args).unwrap();
+        assert_eq!(config.query, "test");
+        assert_eq!(config.file_path, "test.txt");
+    }
+
+    #[test]
+    #[should_panic(expected = "not enough arguments")]
+    fn test_main_with_insufficient_args() {
+        let args = vec![String::from("program")];
+        Config::build(&args).unwrap();
+    }
+
+    #[test]
+    fn test_main_error_handling() {
+        let args = vec![
+            String::from("program"),
+            String::from("test"),
+            String::from("nonexistent.txt")
+        ];
+        let config = Config::build(&args).unwrap();
+        let result = testgru_example_rust::run(config);
+        assert!(result.is_err());
+    }
+}
